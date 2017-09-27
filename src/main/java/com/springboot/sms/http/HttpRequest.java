@@ -1,5 +1,10 @@
 package com.springboot.sms.http;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -14,13 +19,16 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class HttpAPIService {
-
-    @Autowired
+public class HttpRequest {
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	
+	@Autowired
     private CloseableHttpClient httpClient;
 
     @Autowired
@@ -28,7 +36,7 @@ public class HttpAPIService {
 
 
     /**
-     * 不带参数的get请求，如果状态码为200，则返回body，如果不为200，则返回null
+     * 不带参数的get请求，如果状态码为200，则返回body，如果不为200，则返回-100
      * 
      * @param url
      * @return
@@ -49,7 +57,7 @@ public class HttpAPIService {
             // 返回响应体的内容
             return EntityUtils.toString(response.getEntity(), "UTF-8");
         }
-        return null;
+        return "-100";
     }
 
     /**
@@ -117,4 +125,54 @@ public class HttpAPIService {
     public HttpResult doPost(String url) throws Exception {
         return this.doPost(url, null);
     }
+
+    /**
+     * 网建渠道请求
+     * 
+     * @param urlStr
+     * @param params
+     * @return
+     */
+	public String doPost4Wj(String urlStr, StringBuffer params) {
+		String result = "-100";
+		InputStream inStream = null;
+		ByteArrayOutputStream outStream = null;
+		try {
+			URL url = new URL(urlStr);
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setRequestMethod("POST");// 提交模式
+			conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
+			conn.setDoOutput(true);// 是否输入参数
+
+			byte[] bypes = params.toString().getBytes("UTF-8");
+			conn.getOutputStream().write(bypes);// 输入参数
+			inStream = conn.getInputStream();
+			outStream = new ByteArrayOutputStream();
+
+			byte[] buffer = new byte[1024];
+			int len = 0;
+			while ((len = inStream.read(buffer)) != -1) {
+				outStream.write(buffer, 0, len);
+			}
+			byte[] data = outStream.toByteArray();
+			result = new String(data, "utf-8");
+			Integer value = Integer.valueOf(result);
+			if (value > 0) {
+				return "0";
+			} 
+		} catch (Exception e) {
+			log.error("调用网建渠道发送短信异常",e);
+		} finally {
+			try {
+				if (outStream != null) {
+					outStream.close();
+				}
+				if (inStream != null) {
+					inStream.close();
+				}
+			} catch (IOException e) {
+			}
+		}
+		return result;
+	}
 }

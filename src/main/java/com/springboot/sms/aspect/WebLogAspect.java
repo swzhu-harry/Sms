@@ -28,8 +28,10 @@ public class WebLogAspect  {
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	private final Gson gson = new GsonBuilder().create();
 	
-	@Pointcut("execution(public * com.springboot.sms.controller.*.*(..) )")
+	@Pointcut("execution(public * com.springboot.sms.controller.*.*(..))")
 	public void point() {}
+	@Pointcut("execution(public * com.springboot.sms.channel.imp.*.sendSms(..))")
+	public void channel() {}
 	
 	private ThreadLocal<String> threadId = new ThreadLocal<>();
 	private ThreadLocal<Long> threadStartTime = new ThreadLocal<>();
@@ -54,7 +56,7 @@ public class WebLogAspect  {
 		log.info("请求参数日志:{} ",gson.toJson(info));
 	}
 	
-	@AfterReturning(returning="result", pointcut="point()")
+	@AfterReturning(returning="result", pointcut="channel()")
 	public void logResult(Object result) {
 		final String id = threadId.get();
 		

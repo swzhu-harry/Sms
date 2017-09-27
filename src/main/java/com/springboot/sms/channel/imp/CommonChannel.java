@@ -8,7 +8,7 @@ import com.springboot.sms.common.BusinessException;
 import com.springboot.sms.config.ChannelConfigs.ChannelInfo;
 import com.springboot.sms.mode.SmsSendData;
 
-@Service
+@Service("CommonChannel")
 public class CommonChannel implements IChannelManage{
 
 	@Override

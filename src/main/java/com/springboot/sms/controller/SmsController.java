@@ -17,13 +17,13 @@ import io.swagger.annotations.ApiOperation;
  * @author swzhu
  */
 @RestController
-@Api(tags={"Sms API"})
+@Api(tags={"Sms API v1.0"})
 public class SmsController{
 	
 	@Autowired
 	private ISmsService smsService;
 	
-	@RequestMapping(value = "/sms/send", method = RequestMethod.POST ) 
+	@RequestMapping(value = "/v1/sms/send", method = RequestMethod.POST ) 
 	@ApiOperation("发送短信")
 	public String sendSms(@RequestBody SmsSendData req) {
 		return smsService.sendSms(req);

@@ -28,20 +28,20 @@ public class SmsServiceImpl  implements ISmsService {
 		if(channels!=null && !channels.isEmpty()){
 			for (ChannelInfo channel: channels) {
 				answer = doSend(channel,smsInfo);
-				if(answer.getStatus()==SendStatusEnum.SUCCESS){
+				if(SendStatusEnum.SUCCESS.getStateCode().equalsIgnoreCase(answer.getStateCode())){
 					break;
 				}
 			}
 		}
-		return answer==null?SendStatusEnum.FAILURE.getStateCode():answer.getStatus().getStateCode();
+		return answer==null?SendStatusEnum.FAILURE.getStateCode():SendStatusEnum.SUCCESS.getStateCode();
 	}
 
 	private BaseAnswer doSend(ChannelInfo channel, SmsSendData smsInfo) {
 		try {
-			IChannelManage chm = (IChannelManage)SpringUtils.getBean(channel.getChannelName().serviceClass());
+			IChannelManage chm = (IChannelManage)SpringUtils.getBean(channel.getChannelName().serviceClass().getSimpleName());
 			return chm.sendSms(channel, smsInfo);
 		} catch (BusinessException e) {
-			return GeneralUtil.setBaseAnswer(new BaseAnswer(),SendStatusEnum.FAILURE,e.getMessage());
+			return GeneralUtil.setBaseAnswer(SendStatusEnum.FAILURE,e.getMessage(),this.getClass());
 		}
 	}
 }

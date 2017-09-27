@@ -1,7 +1,6 @@
 package com.springboot.sms.channel.imp;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.net.URLEncoder;
 import java.util.UUID;
 
 import javax.annotation.Resource;
@@ -9,22 +8,19 @@ import javax.annotation.Resource;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Service;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.springboot.sms.channel.IChannelManage;
 import com.springboot.sms.common.BaseAnswer;
 import com.springboot.sms.common.BusinessException;
 import com.springboot.sms.common.EnumManage.SendStatusEnum;
 import com.springboot.sms.common.GeneralUtil;
-import com.springboot.sms.common.StringUtils;
 import com.springboot.sms.config.ChannelConfigs.ChannelInfo;
-import com.springboot.sms.http.HttpAPIService;
+import com.springboot.sms.http.HttpRequest;
 import com.springboot.sms.mode.SmsSendData;
-@Service
+
+@Service("XaunWuChannel")
 public class XaunWuChannel implements IChannelManage{
-	private final Gson gson = new GsonBuilder().create();
 	@Resource
-	private HttpAPIService httpAPIService;
+	private HttpRequest httpRequest;
 	
 	@Override
 	public BaseAnswer sendSms(ChannelInfo channel, SmsSendData smsInfo)  throws BusinessException  {
@@ -34,24 +30,20 @@ public class XaunWuChannel implements IChannelManage{
 		final  int EN_CODE = 1;
 		//版本号：1.0（1.0密码加密传输、为空密码以明文传输）
 		final  String VERSION = "1.0";
-		
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("username", channel.getUserName());
-		map.put("password", DigestUtils.md5Hex(channel.getPassword()==null?"":channel.getPassword().toString()));
-		map.put("to", smsInfo.getMobile());
-		map.put("text", smsInfo.getContent());
-		map.put("msgtype", MSG_TYPE);
-		map.put("encode", EN_CODE);
-		map.put("version", VERSION);
-		map.put("subID", "");
-		map.put("batchid", UUID.randomUUID());
-		System.out.println("sms info:" + gson.toJson(map));
-		String url = channel.getSendUrl()==null?"":channel.getSendUrl().toString();
 		try {
-			String result = httpAPIService.doGet(url,map);
-			System.out.println("----------------------------------------------------");
-			System.out.println(result);
-			System.out.println("----------------------------------------------------");
+			StringBuffer sb = new StringBuffer(channel.getSendUrl()==null?"":channel.getSendUrl().toString());
+        	sb.append("?username=").append(channel.getUserName());
+        	sb.append("&password=").append(DigestUtils.md5Hex(channel.getPassword()==null?"":channel.getPassword().toString()));
+        	sb.append("&to=").append(smsInfo.getMobile());
+        	//特殊字符编码处理
+        	sb.append("&text=").append(URLEncoder.encode(smsInfo.getContent(),"UTF-8"));
+        	sb.append("&subid=").append("&biztype=");
+        	sb.append("&msgtype=").append(MSG_TYPE);
+        	sb.append("&encode=").append(EN_CODE);
+        	sb.append("&version=").append(VERSION);
+        	sb.append("&batchid=").append(UUID.randomUUID());
+        	System.out.println(sb.toString());
+        	String result = httpRequest.doGet(sb.toString());
 			return doResult(result);
 		} catch (Exception e) {
 			throw new BusinessException(SendStatusEnum.FAILURE,e);
@@ -61,9 +53,9 @@ public class XaunWuChannel implements IChannelManage{
 	private BaseAnswer doResult(String result) {
 		ErrorCode errorCode = ErrorCode.getErrorCode(result);
 		if(errorCode==ErrorCode.SUCC){
-			return GeneralUtil.setBaseAnswer(new BaseAnswer(),SendStatusEnum.SUCCESS,"成功");
+			return GeneralUtil.setBaseAnswer(SendStatusEnum.SUCCESS,"成功",this.getClass());
 		}else{
-			return GeneralUtil.setBaseAnswer(new BaseAnswer(),SendStatusEnum.FAILURE,errorCode.desc);
+			return GeneralUtil.setBaseAnswer(SendStatusEnum.FAILURE,errorCode.desc,this.getClass());
 		}
 	}
 
@@ -86,7 +78,7 @@ public class XaunWuChannel implements IChannelManage{
 		}
 		private static ErrorCode getErrorCode(String code)
 		{
-			if(!StringUtils.isEmpty(code)){
+			if(!GeneralUtil.isEmpty(code)){
 				ErrorCode[] itms = values();
 				for (ErrorCode itm : itms) {
 					if(code.trim().equals(itm.code)){

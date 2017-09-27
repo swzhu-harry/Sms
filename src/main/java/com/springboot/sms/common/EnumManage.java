@@ -29,7 +29,7 @@ public class EnumManage {
 		}
 	    public static ChannelEnum getChannelEnum(Object channelName)
 		{
-			if(!StringUtils.isEmpty4Obj(channelName)){
+			if(!GeneralUtil.isEmpty4Obj(channelName)){
 				ChannelEnum[] itms = values();
 				for (ChannelEnum itm : itms) {
 					if(channelName.toString().trim().equalsIgnoreCase(itm.channelName)){
@@ -83,7 +83,7 @@ public class EnumManage {
 	    }
 	    public static ChanelStatusEnum getChanelStatusEnum(Object status)
 		{
-			if(!StringUtils.isEmpty4Obj(status)){
+			if(!GeneralUtil.isEmpty4Obj(status)){
 				ChanelStatusEnum[] itms = values();
 				for (ChanelStatusEnum itm : itms) {
 					if(Integer.valueOf(status.toString()) == itm.stateCode){

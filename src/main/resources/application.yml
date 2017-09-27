@@ -1,9 +1,12 @@
+#测试环境
 spring: 
   profiles: test
   
 server:
   port: 8060
+  
 ---
+#开发环境
 spring: 
   profiles: dev
 
@@ -21,6 +24,12 @@ spring:
   application:
     name: smsDevice
 
+#########################################################    
+#配置说明： 渠道相互保护作用									#
+#priority 优先级，1》2》3....								#
+#channelName 渠道名称：汉语全拼 ,目前支持[xuanwu/wangjian]	#
+#status 默认是有效：1- used,2- unused						#  
+#########################################################
 sms:
   channels:
     - sendUrl: http://211.147.239.62:9050/cgi-bin/sendsms
@@ -28,22 +37,10 @@ sms:
       password: NVgyRx7N
       priority: 2 
       channelName: xuanwu
-    - sendUrl: http://211.147.239.62:9050/cgi-bin/sendsms
-      userName: yx@sijiankeji1
-      password: 456789
+    - sendUrl: http://utf8.sms.webchinese.cn/
+      userName: sijian
+      password: 05eda2c0a776e130fc2d
       priority: 1
-      channelName: xuanwu
-  
-#http:
-#  #最大连接数
-#  maxTotal: 100
-#  #并发数
-#  defaultMaxPerRoute: 20
-#  #创建连接的最长时间
-#  connectTimeout: 1000
-#  #从连接池中获取到连接的最长时间
-#  connectionRequestTimeout: 500
-#  #数据传输的最长时间
-#  socketTimeout: 10000
-#  #提交请求前测试连接是否可用
-#  staleConnectionCheckEnabled: true
+      channelName: wangjian
+      status: 1
+
