@@ -24,12 +24,12 @@ spring:
 sms:
   channels:
     - sendUrl: http://211.147.239.62:9050/cgi-bin/sendsms
-      userName: yx@sijiankeji1
-      password: 123456
+      userName: CQCYWJ@CQCYWJ
+      password: NVgyRx7N
       priority: 2 
       channelName: xuanwu
     - sendUrl: http://211.147.239.62:9050/cgi-bin/sendsms
-      userName: yx@sijiankeji2
+      userName: yx@sijiankeji1
       password: 456789
       priority: 1
       channelName: xuanwu
@@ -40,7 +40,7 @@ sms:
 #  #并发数
 #  defaultMaxPerRoute: 20
 #  #创建连接的最长时间
-# connectTimeout: 1000
+#  connectTimeout: 1000
 #  #从连接池中获取到连接的最长时间
 #  connectionRequestTimeout: 500
 #  #数据传输的最长时间
