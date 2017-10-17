@@ -9,3 +9,5 @@
    
    
 说明：http://ip:port/v1/sms/send 发送短信rest接口
+
+logback-spring.xml 只能在jar中生效，外部要生效必须再配置中指定文件路径
