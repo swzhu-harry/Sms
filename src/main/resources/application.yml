@@ -34,12 +34,12 @@ sms:
   channels:
     - sendUrl: http://211.147.239.62:9050/cgi-bin/sendsms
       userName: CQCYWJ@CQCYWJ
-      password: NVgyRx7N
+      password: ******
       priority: 2 
       channelName: xuanwu
     - sendUrl: http://utf8.sms.webchinese.cn/
       userName: sijian
-      password: 05eda2c0a776e130fc2d
+      password: ******
       priority: 1
       channelName: wangjian
       status: 1
