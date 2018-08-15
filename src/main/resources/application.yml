@@ -33,12 +33,12 @@ spring:
 sms:
   channels:
     - sendUrl: http://211.147.239.62:9050/cgi-bin/sendsms
-      userName: CQCYWJ@CQCYWJ
+      userName: xxx
       password: ******
       priority: 2 
       channelName: xuanwu
     - sendUrl: http://utf8.sms.webchinese.cn/
-      userName: sijian
+      userName: xxx
       password: ******
       priority: 1
       channelName: wangjian
